@@ -11,8 +11,7 @@ has file          => (
 has alias         => (
     is            => 'rw',
     isa           => 'Str',
-    predicate     => 'has_alias',
-    builder       => '_build_alias',
+    lazy_build    => 1,
 );
 
 has args          => (
