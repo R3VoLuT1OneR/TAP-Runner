@@ -106,7 +106,7 @@ sub get_harness_args {
 sub get_harness_tests {
     my $self  = shift;
 
-    map{ [ $_->file, $_->alias ] } @{ $self->tap_tests };
+    map{ [ $_->file, $_->alias ] } @{ $self->tests };
 }
 
 no Moose;
