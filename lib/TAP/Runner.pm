@@ -1,11 +1,20 @@
 package TAP::Runner;
 # ABSTRACT: Running tests with options
 use Moose;
-
-use TAP::Harness;
+use Carp;
 use TAP::Runner::Test;
-
 use Math::Cartesian::Product;
+
+has harness_class => (
+    is            => 'rw',
+    isa           => 'Str',
+    default       => 'TAP::Harness',
+);
+
+has harness_formatter => (
+    is            => 'rw',
+    predicate     => 'has_custom_formatter',
+);
 
 has harness_args  => (
     is            => 'rw',
@@ -41,15 +50,19 @@ sub _build_tap_tests {
 
             # Make cartesian multiplication with all options
             foreach ( cartesian { @_ } @all_options_array ) {
+
                 # Build correct test args array
                 # First element this is option name and second option value
-                my @test_args  = ( map { ($_->[0],$_->[1]) } @$_ );
-                my $test_alias = $test->{alias}  .' '. join(' ',@test_args);
+                my @test_opts  = ( map{ ($_->[0],$_->[1]) } @$_ );
+                my @test_args  = ( @{$test->{args}}, @test_opts );
+                my $test_alias = $test->{alias}  .' '. join(' ',@test_opts);
+
                 push @tests, TAP::Runner::Test->new({
                     file  => $test->{file},
                     alias => $test_alias,
                     args  => \@test_args,
                 });
+
             }
 
         } else {
@@ -64,33 +77,36 @@ sub _build_tap_tests {
 }
 
 sub run {
-    my $self    = shift;
-    my $harness = TAP::Harness->new( $self->get_harness_args );
+    my $self          = shift;
+    my $harness_class = $self->harness_class;
+    my $harness_args  = $self->get_harness_args;
+    my @harness_tests = $self->get_harness_tests;
 
-    $harness->runtests( $self->get_harness_tests_list );
+    # Load harness class
+    eval "require $harness_class";
+    croak "Can't load $harness_class" if $@;
+
+    my $harness = $harness_class->new( $harness_args );
+
+    # Custom formatter
+    $harness->formatter( $self->harness_formatter )
+        if $self->has_custom_formatter;
+
+    $harness->runtests( @harness_tests );
 }
 
 sub get_harness_args {
     my $self      = shift;
+    my %test_args = map { ( $_->alias, $_->args ) } @{$self->tap_tests};
 
-    $self->harness_args->{test_args} = {
-        map { ( $_->alias, $_->args ) } @{$self->tap_tests}
-    };
-
+    $self->harness_args->{test_args} = \%test_args;
     $self->harness_args;
 }
 
-sub get_harness_tests_list {
+sub get_harness_tests {
     my $self  = shift;
-    my @tests = ();
 
-    foreach my $test ( @{ $self->tap_tests } ) {
-
-        push @tests, [ $test->file, $test->alias ];
-
-    }
-
-    @tests;
+    map{ [ $_->file, $_->alias ] } @{ $self->tap_tests };
 }
 
 no Moose;
