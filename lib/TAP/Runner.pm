@@ -8,8 +8,7 @@ use Math::Cartesian::Product;
 has harness_class => (
     is            => 'rw',
     isa           => 'Str',
-    default       => 'TAP::Harness',
-);
+    default       => 'TAP::Harness',);
 
 has harness_formatter => (
     is            => 'rw',
@@ -28,13 +27,13 @@ has tests         => (
     required      => 1,
 );
 
-has tap_tests     => (
+has _tap_tests    => (
     is            => 'rw',
     isa           => 'ArrayRef[TAP::Runner::Test]',
     lazy_build    => 1,
 );
 
-sub _build_tap_tests {
+sub _build__tap_tests {
     my $self  = shift;
     my @tests = ();
 
@@ -97,7 +96,7 @@ sub run {
 
 sub get_harness_args {
     my $self      = shift;
-    my %test_args = map { ( $_->alias, $_->args ) } @{$self->tap_tests};
+    my %test_args = map { ( $_->alias, $_->args ) } @{$self->_tap_tests};
 
     $self->harness_args->{test_args} = \%test_args;
     $self->harness_args;
@@ -106,9 +105,33 @@ sub get_harness_args {
 sub get_harness_tests {
     my $self  = shift;
 
-    map{ [ $_->file, $_->alias ] } @{ $self->tap_tests };
+    map{ [ $_->file, $_->alias ] } @{ $self->_tap_tests };
 }
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+This module allows to run tests more flexible. Allows to use TAP::Harness, not just for unit tests.
+
+=head1 METHODS
+
+=head2 new
+
+=head2 run
+
+=head1 ATTRIBUTES
+
+=head2 harness_class
+
+=head2 harness_formatter
+
+=head2 tests
+
+=head2 tests_args
