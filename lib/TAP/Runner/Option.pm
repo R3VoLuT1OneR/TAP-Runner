@@ -19,7 +19,7 @@ has name          => (
 has values        => (
     is            => 'ro',
     isa           => 'ArrayRef',
-    lazy_build    => 1,
+    required      => 1,
 );
 
 has multiple      => (

@@ -7,7 +7,8 @@ use TAP::Runner::Test;
 has harness_class => (
     is            => 'rw',
     isa           => 'Str',
-    default       => 'TAP::Harness',);
+    default       => 'TAP::Harness',
+);
 
 has harness_formatter => (
     is            => 'rw',
