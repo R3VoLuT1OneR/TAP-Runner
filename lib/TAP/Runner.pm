@@ -62,8 +62,8 @@ sub _get_harness_args {
 sub _get_harness_tests {
     my $self  = shift;
 
-    map{ [ $_->{file}, $_->{alias} ] }
-    map{ @{ $_->harness_tests }       } @{ $self->tests };
+    map { [ $_->{file}, $_->{alias} ] }
+    map { @{ $_->harness_tests }      } @{ $self->tests };
 }
 
 no Moose;
