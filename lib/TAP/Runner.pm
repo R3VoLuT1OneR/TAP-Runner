@@ -147,14 +147,35 @@ This module allows to run tests more flexible. Allows to use TAP::Harness, not j
 
 =head2 new
 
+Create a new L<TAP::Runner> object. tests atribute required
+
+    # Tests to run with runner
+    my @tests  = ( { file => 't/test.t' } );
+
+    # Tests auto coerce to L<TAP::Runner::Test>
+    my $runner = TAP::Runner->new(
+        tests => \@tests,
+    );
+
 =head2 run
+
+Run all the tests
 
 =head1 ATTRIBUTES
 
 =head2 harness_class
 
+Harness class to use for run tests
+
 =head2 harness_formatter
+
+Custom harness formatter
+
+=head2 harness_args
+
+More arguments that can be provided to harness object
 
 =head2 tests
 
-=head2 tests_args
+Test configuration to run
+

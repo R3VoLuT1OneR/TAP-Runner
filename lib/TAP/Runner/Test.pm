@@ -122,3 +122,14 @@ sub _build_harness_tests {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head1 ATTRIBUTES
+
