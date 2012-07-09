@@ -42,10 +42,34 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
-=head1 SYNOPSIS
-
 =head1 DESCRIPTION
+
+Object used for L<TAP::Runner::Test> options
 
 =head1 METHODS
 
+=head2 get_values_array
+
+Build array used for cartesian multiplication
+Example: [ [ opt_name, opt_val1 ], [ opt_name1, opt_val2 ] ]
+
 =head1 ATTRIBUTES
+
+=head2 name
+
+Option name
+
+=head2 values
+
+Array of option values
+
+=head2 multiple
+
+If option multiple ( default not ) so for each option value will be new test
+with this value
+
+Example:
+For option { name => '--opt_exampl', values => [ 1, 2 ], multiple => 1 }
+will run to tests, with diferrent optoins:
+t/test.t --opt_exampl 1
+t/test.t --opt_exampl 2

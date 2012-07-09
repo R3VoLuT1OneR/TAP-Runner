@@ -125,11 +125,30 @@ __PACKAGE__->meta->make_immutable;
 
 __END__
 
-=head1 SYNOPSIS
-
 =head1 DESCRIPTION
+
+Test object used by L<TAP::Runner>
 
 =head1 METHODS
 
 =head1 ATTRIBUTES
 
+=head2 file
+
+Test file to run ( required )
+
+=head2 alias
+
+Alias for tests ( by default used file name )
+
+=head2 args
+
+Arguments that will pass to all the tests
+
+=head2 options
+
+Array of L<TAP::Runner::Option> used by test.
+
+=head2 harness_tests
+
+Array of hashes prepared for testing with L<TAP::Harness>
