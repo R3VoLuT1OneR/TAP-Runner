@@ -1,29 +1,37 @@
 package TAP::Runner::Test;
 # ABSTRACT: Runner test class
 use Moose;
+use TAP::Runner::Option;
 
 has file          => (
-    is            => 'rw',
+    is            => 'ro',
     isa           => 'Str',
     required      => 1,
 );
 
 has alias         => (
-    is            => 'rw',
+    is            => 'ro',
     isa           => 'Str',
     lazy_build    => 1,
 );
 
 has args          => (
-    is            => 'rw',
+    is            => 'ro',
     isa           => 'ArrayRef',
     default       => sub{ [] },
 );
 
 has options       => (
-    is            => 'rw',
-    isa           => 'ArrayRef[TAP::Runner::Option]',
+    is            => 'ro',
+    isa           => 'ArrayRef::TAP::Runner::Option',
     predicate     => 'has_options',
+    coerce        => 1,
+);
+
+has harness_tests => (
+    is            => 'ro',
+    isa           => 'ArrayRef[HashRef]',
+    lazy_build    => 1,
 );
 
 # Build alias if it not defined
@@ -32,13 +40,8 @@ sub _build_alias {
     $self->file;
 }
 
-sub _get_multiple_options {
-    my $self = shift;
-
-    grep { $_->multiple } @{ $self->options };
-}
-
-sub get_harrness_tests {
+# Build harness tests list from all the options and args
+sub _build_harness_tests {
     my $self             = shift;
     my @test_args        = @{ $self->args };
     my @multiple_options = ();
@@ -84,7 +87,7 @@ sub get_harrness_tests {
         }
     }
 
-    ( @harness_tests );
+    \@harness_tests;
 }
 
 no Moose;
