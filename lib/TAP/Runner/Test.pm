@@ -2,6 +2,14 @@ package TAP::Runner::Test;
 # ABSTRACT: Runner test class
 use Moose;
 use TAP::Runner::Option;
+use Moose::Util::TypeConstraints;
+
+subtype 'ArrayRef::' . __PACKAGE__,
+    as 'ArrayRef[' . __PACKAGE__ . ']';
+
+coerce 'ArrayRef::' . __PACKAGE__,
+    from 'ArrayRef[HashRef]',
+    via { [ map { __PACKAGE__->new($_) } @{$_} ] };
 
 has file          => (
     is            => 'ro',
