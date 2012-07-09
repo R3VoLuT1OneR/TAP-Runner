@@ -3,7 +3,6 @@ package TAP::Runner;
 use Moose;
 use Carp;
 use TAP::Runner::Test;
-use Math::Cartesian::Product;
 
 has harness_class => (
     is            => 'rw',
@@ -64,7 +63,7 @@ sub _get_harness_tests {
     my $self  = shift;
 
     map{ [ $_->{file}, $_->{alias} ] }
-    map{ @{ $_->harness_test }       } @{ $self->tests };
+    map{ @{ $_->harness_tests }       } @{ $self->tests };
 }
 
 no Moose;

@@ -1,8 +1,12 @@
 package TAP::Runner::Test;
 # ABSTRACT: Runner test class
 use Moose;
-use TAP::Runner::Option;
 use Moose::Util::TypeConstraints;
+
+use TAP::Runner::Option;
+
+# Use cartesian multiplication
+use Math::Cartesian::Product;
 
 subtype 'ArrayRef::' . __PACKAGE__,
     as 'ArrayRef[' . __PACKAGE__ . ']';
@@ -33,6 +37,7 @@ has options       => (
     is            => 'ro',
     isa           => 'ArrayRef::TAP::Runner::Option',
     predicate     => 'has_options',
+    default       => sub{ [] },
     coerce        => 1,
 );
 
@@ -72,8 +77,12 @@ sub _build_harness_tests {
 
         # Make array of arrays that contains merged options values with it names
         foreach my $option ( @multiple_options ) {
-            @merged_options = map { [ $option->name, $_ ] } @{ $option->values };
+            push @merged_options, [
+                map { [ $option->name, $_ ] } @{ $option->values }
+            ];
         }
+
+        use Data::Dumper; print Dumper( @merged_options );
 
         # Make cartesian multiplication with all options
         cartesian {
@@ -82,8 +91,8 @@ sub _build_harness_tests {
 
             push @harness_tests, {
                 file  => $self->file,
-                alias => $self->alias,
-                args  => ( @test_args, @opt_args ),
+                alias => $self->alias .' '. join(' ',@opt_args),
+                args  => [ @test_args, @opt_args ],
             }
         } @merged_options;
 
@@ -91,7 +100,7 @@ sub _build_harness_tests {
         push @harness_tests, {
             file  => $self->file,
             alias => $self->alias,
-            args  => @test_args,
+            args  => \@test_args,
         }
     }
 

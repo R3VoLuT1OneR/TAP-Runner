@@ -24,7 +24,7 @@ has values        => (
 
 has multiple      => (
     is            => 'ro',
-    isa           => 'ArrayRef',
+    isa           => 'Bool',
     default       => 0,
 );
 
