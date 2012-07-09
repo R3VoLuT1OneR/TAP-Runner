@@ -12,7 +12,6 @@ TAP::Runner->new(
         harness_args => {
             rules => {
                 par => [
-                    # { seq => qr/^Test alias$/ },
                     { seq => qr/^Test alias 2.*$/  },
                     { seq => '*' },
                 ],
@@ -24,22 +23,22 @@ TAP::Runner->new(
                 file    => 't/examples/test.t',
                 alias   => 'Test alias',
                 args    => [
-                    '-s', 't/etc/test_server'
+                    '--option', 'option_value_1'
                 ],
                 options => [
                     {
-                        name   => '-w',
+                        name   => '--server',
                         values => [
-                            'first opt',
-                            'second opt',
+                            'first.local',
+                            'second.local',
                         ],
-                        multiple => 1,
+                        multiple => 0,
                     },
                     {
-                        name   => '-r',
+                        name   => '--browser',
                         values => [
-                            'test2',
-                            'test44',
+                            'firefox',
+                            'chrome',
                         ],
                         multiple => 1,
                     },
@@ -49,16 +48,17 @@ TAP::Runner->new(
                 file    => 't/examples/test2.t',
                 alias   => 'Test alias 2',
                 args    => [
-                    '-s', 't/etc/test_server'
+                    '--option', 'option_value_1'
                 ],
             },
             {
                 file    => 't/examples/test2.t',
                 alias   => 'Test alias 22',
                 args    => [
-                    '-s', 't/etc/test_server'
+                    '--option', 'option_value_2'
                 ],
             },
         ],
     }
 )->run;
+
