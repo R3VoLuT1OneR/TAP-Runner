@@ -4,7 +4,7 @@ use Test::More;
 use Test::Fatal;
 use Test::Deep;
 
-plan tests => 6;
+plan tests => 4;
 
     use_ok( 'TAP::Runner::Option' );
 
@@ -24,28 +24,21 @@ plan tests => 6;
         'Check that values required',
     );
 
-my $option = TAP::Runner::Option->new(
-    name   => 'test_option',
-    values => [ 1, 2 ,3 ],
-);
-
-    isa_ok(
-        $option,
-        'TAP::Runner::Option',
-    );
-
-    can_ok(
-        $option,
-        'get_values_array',
-    );
-
     cmp_deeply(
-        $option->get_values_array,
-        [
-            [ 'test_option' => '1' ],
-            [ 'test_option' => '2' ],
-            [ 'test_option' => '3' ],
-        ],
+        TAP::Runner::Option->new(
+            name   => 'test_option',
+            values => [ 1, 2 ,3 ],
+        ),
+        all(
+            isa( 'TAP::Runner::Option' ),
+            methods(
+                get_values_array => [
+                    [ 'test_option' => '1' ],
+                    [ 'test_option' => '2' ],
+                    [ 'test_option' => '3' ],
+                ],
+            ),
+        ),
         'get_values_array functionality test',
     );
 
