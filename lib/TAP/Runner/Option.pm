@@ -28,6 +28,14 @@ has multiple      => (
     default       => 0,
 );
 
+# Build array used for cartesian multiplication
+# Example: [ [ opt_name, opt_val1 ], [ opt_name1, opt_val2 ] ]
+sub get_values_array {
+    my $self = shift;
+
+    [ map { [ $self->name, $_ ] } @{ $self->values } ];
+}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;

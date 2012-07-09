@@ -36,7 +36,6 @@ has args          => (
 has options       => (
     is            => 'ro',
     isa           => 'ArrayRef::TAP::Runner::Option',
-    predicate     => 'has_options',
     default       => sub{ [] },
     coerce        => 1,
 );
@@ -56,9 +55,11 @@ sub _build_alias {
 # Build harness tests list from all the options and args
 sub _build_harness_tests {
     my $self             = shift;
-    my @test_args        = @{ $self->args };
     my @multiple_options = ();
     my @harness_tests    = ();
+
+    # Array of args that same for all the tests
+    my @test_args        = @{ $self->args };
 
     foreach my $option ( @{ $self->options } ) {
 
@@ -67,31 +68,42 @@ sub _build_harness_tests {
             next;
         }
 
+        # Add options that same for all the tests
         push @test_args, map { ( $option->name, $_ ) } @{ $option->values };
 
     }
 
+    # If there are multiple options, that should passed to tests, build correct
+    # tests args and harness tests
     if ( @multiple_options ) {
 
-        my @merged_options = ();
-
         # Make array of arrays that contains merged options values with it names
-        foreach my $option ( @multiple_options ) {
-            push @merged_options, [
-                map { [ $option->name, $_ ] } @{ $option->values }
-            ];
-        }
-
-        use Data::Dumper; print Dumper( @merged_options );
+        # Example:
+        # (
+        #   [ [ opt_name1, opt_val1.1 ], [ opt_name1, opt_val1.2 ] ],
+        #   [ [ opt_name2, opt_val2.1 ], [ opt_name2, opt_val2.2 ] ],
+        # )
+        #
+        my @merged_options = map { $_->get_values_array } @multiple_options;
 
         # Make cartesian multiplication with all options
+        # Result of example multiplication:
+        # [ opt_name1, opt_val1.1 ],[ opt_name2, opt_val2.1 ]
+        # [ opt_name1, opt_val1.1 ],[ opt_name2, opt_val2.2 ]
+        # [ opt_name1, opt_val1.2 ],[ opt_name2, opt_val2.1 ]
+        # [ opt_name1, opt_val1.2 ],[ opt_name2, opt_val2.2 ]
+        #
         cartesian {
             # Unmerge options make separated option name and value
+            # Example: ( opt_name1, opt_val1, opt_name2, opt_val2 )
             my @opt_args = map { ($_->[0],$_->[1]) } @_;
+
+            # Build new alias defends on options that passed to test
+            my $alias    = $self->alias .' '. join(' ',@opt_args);
 
             push @harness_tests, {
                 file  => $self->file,
-                alias => $self->alias .' '. join(' ',@opt_args),
+                alias => $alias,
                 args  => [ @test_args, @opt_args ],
             }
         } @merged_options;
