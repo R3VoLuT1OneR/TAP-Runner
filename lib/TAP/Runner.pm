@@ -122,14 +122,14 @@ __END__
                     ],
                 },
                 {
-                    file    => 't/examples/test2.t',
+                    file    => 't/examples/test.t',
                     alias   => 'Test alias 2',
                     args    => [
                         '--option', 'option_value_1'
                     ],
                 },
                 {
-                    file    => 't/examples/test2.t',
+                    file    => 't/examples/test.t',
                     alias   => 'Test alias 22',
                     args    => [
                         '--option', 'option_value_2'
