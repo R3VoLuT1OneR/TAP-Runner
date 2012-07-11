@@ -35,7 +35,7 @@ sub run {
     my @harness_tests = $self->_get_harness_tests;
 
     # Load harness class
-    eval "require $harness_class";
+    eval "use $harness_class";
     croak "Can't load $harness_class" if $@;
 
     my $harness = $harness_class->new( $harness_args );
@@ -49,13 +49,22 @@ sub run {
 
 # Harness args with building test arguments
 sub _get_harness_args {
-    my $self      = shift;
+    my $self  = shift;
+
+    # Build parallel runing test rules
+    my @rules = (
+        map { $_->get_parallel_rules } @{ $self->tests },
+        exists $self->harness_args->{rules}->{par} ?
+            @{ $self->harness_args->{rules}->{par} } : ()
+    );
 
     # Build tests args hash ref
-    $self->harness_args->{test_args} = {
+    my %test_args =
         map { ( $_->{alias}, $_->{args} ) }
-        map { @{ $_->harness_tests }      } @{ $self->tests } };
+        map { @{ $_->harness_tests }      } @{ $self->tests };
 
+    $self->harness_args->{rules} = { par => \@rules };
+    $self->harness_args->{test_args} = \%test_args;
     $self->harness_args;
 }
 

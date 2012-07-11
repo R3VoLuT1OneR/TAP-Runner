@@ -10,13 +10,7 @@ TAP::Runner->new(
         # harness_class => 'TAP::Harness::JUnit',
         # harness_formatter => TAP::Formatter::HTML->new,
         harness_args => {
-            rules => {
-                par => [
-                    { seq => qr/^Test alias 2.*$/  },
-                    { seq => '*' },
-                ],
-            },
-            jobs  => 4,
+            jobs  => 2,
         },
         tests => [
             {
@@ -33,6 +27,7 @@ TAP::Runner->new(
                             'second.local',
                         ],
                         multiple => 0,
+                        parallel => 0,
                     },
                     {
                         name   => '--browser',
@@ -41,6 +36,7 @@ TAP::Runner->new(
                             'chrome',
                         ],
                         multiple => 1,
+                        parallel => 1,
                     },
                 ],
             },

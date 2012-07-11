@@ -2,11 +2,25 @@ package TAP::Runner::Test;
 # ABSTRACT: Runner test class
 use Moose;
 use Moose::Util::TypeConstraints;
-
 use TAP::Runner::Option;
+use Math::Cartesian::Product; # Used for cartesian multiplication
 
-# Use cartesian multiplication
-use Math::Cartesian::Product;
+=head1 DESCRIPTION
+
+Test object used by L<TAP::Runner>
+
+=cut
+
+=head1 MOOSE SUBTYPES
+
+=cut
+
+=head2 ArrayRef::TAP::Runner::Test
+
+Coerce ArrayRef[HashRef] to ArrayRef[TAP::Runner::Option] Used by L<TAP::Runner>
+
+=cut
+
 
 subtype 'ArrayRef::' . __PACKAGE__,
     as 'ArrayRef[' . __PACKAGE__ . ']';
@@ -15,11 +29,25 @@ coerce 'ArrayRef::' . __PACKAGE__,
     from 'ArrayRef[HashRef]',
     via { [ map { __PACKAGE__->new($_) } @{$_} ] };
 
+=head1 ATTRIBUTES
+
+=head2 file
+
+Test file to run ( required )
+
+=cut
+
 has file          => (
     is            => 'ro',
     isa           => 'Str',
     required      => 1,
 );
+
+=head2 alias
+
+Alias for tests ( by default used file name )
+
+=cut
 
 has alias         => (
     is            => 'ro',
@@ -27,11 +55,23 @@ has alias         => (
     lazy_build    => 1,
 );
 
+=head2 args
+
+Arguments that will pass to all the tests
+
+=cut
+
 has args          => (
     is            => 'ro',
     isa           => 'ArrayRef',
     default       => sub{ [] },
 );
+
+=head2 options
+
+Array of L<TAP::Runner::Option> used by test.
+
+=cut
 
 has options       => (
     is            => 'ro',
@@ -40,11 +80,44 @@ has options       => (
     coerce        => 1,
 );
 
+=head2 harness_tests
+
+Array of hashes prepared for testing with L<TAP::Harness>
+
+=cut
+
 has harness_tests => (
     is            => 'ro',
     isa           => 'ArrayRef[HashRef]',
     lazy_build    => 1,
 );
+
+=head1 METHODS
+
+=cut
+
+=head2 get_parallel_rules
+
+Rules for run tests in parallel
+
+=cut
+
+sub get_parallel_rules {
+    my $self             = shift;
+    my @rules            = ();
+    my @parallel_options =
+        grep { $_->multiple && $_->parallel } @{ $self->options };
+
+    foreach my $option ( @parallel_options ) {
+        my $test_alias  = $self->alias;
+        my $option_name = $option->name;
+
+        push @rules, { seq => qr/$test_alias.*$option_name $_.*$/ }
+            foreach @{ $option->values };
+    }
+
+    ( @rules );
+};
 
 # Build alias if it not defined
 sub _build_alias {
@@ -124,31 +197,3 @@ __PACKAGE__->meta->make_immutable;
 1;
 
 __END__
-
-=head1 DESCRIPTION
-
-Test object used by L<TAP::Runner>
-
-=head1 METHODS
-
-=head1 ATTRIBUTES
-
-=head2 file
-
-Test file to run ( required )
-
-=head2 alias
-
-Alias for tests ( by default used file name )
-
-=head2 args
-
-Arguments that will pass to all the tests
-
-=head2 options
-
-Array of L<TAP::Runner::Option> used by test.
-
-=head2 harness_tests
-
-Array of hashes prepared for testing with L<TAP::Harness>
