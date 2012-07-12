@@ -9,19 +9,13 @@ use Math::Cartesian::Product; # Used for cartesian multiplication
 
 Test object used by L<TAP::Runner>
 
-=cut
-
 =head1 MOOSE SUBTYPES
-
-=cut
 
 =head2 ArrayRef::TAP::Runner::Test
 
 Coerce ArrayRef[HashRef] to ArrayRef[TAP::Runner::Option] Used by L<TAP::Runner>
 
 =cut
-
-
 subtype 'ArrayRef::' . __PACKAGE__,
     as 'ArrayRef[' . __PACKAGE__ . ']';
 
@@ -31,48 +25,44 @@ coerce 'ArrayRef::' . __PACKAGE__,
 
 =head1 ATTRIBUTES
 
-=head2 file
+=head2 file Str
 
 Test file to run ( required )
 
 =cut
-
 has file          => (
     is            => 'ro',
     isa           => 'Str',
     required      => 1,
 );
 
-=head2 alias
+=head2 alias Str
 
 Alias for tests ( by default used file name )
 
 =cut
-
 has alias         => (
     is            => 'ro',
     isa           => 'Str',
     lazy_build    => 1,
 );
 
-=head2 args
+=head2 args ArrayRef
 
 Arguments that will pass to all the tests
 
 =cut
-
 has args          => (
     is            => 'ro',
     isa           => 'ArrayRef',
     default       => sub{ [] },
 );
 
-=head2 options
+=head2 options ArrayRef[TAP::Runner::Option]
 
 Array of L<TAP::Runner::Option> used by test.
 
 =cut
-
 has options       => (
     is            => 'ro',
     isa           => 'ArrayRef::TAP::Runner::Option',
@@ -80,12 +70,13 @@ has options       => (
     coerce        => 1,
 );
 
-=head2 harness_tests
+=head2 harness_tests ArrayRef[HashRef]
 
 Array of hashes prepared for testing with L<TAP::Harness>
 
-=cut
+HashRef -> { file: file.t, alias: 'Test alias', args: [] }
 
+=cut
 has harness_tests => (
     is            => 'ro',
     isa           => 'ArrayRef[HashRef]',
@@ -101,7 +92,6 @@ has harness_tests => (
 Rules for run tests in parallel
 
 =cut
-
 sub get_parallel_rules {
     my $self             = shift;
     my @rules            = ();

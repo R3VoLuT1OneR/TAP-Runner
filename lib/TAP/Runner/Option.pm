@@ -3,23 +3,17 @@ package TAP::Runner::Option;
 use Moose;
 use Moose::Util::TypeConstraints;
 
-
 =head1 DESCRIPTION
 
 Object used for L<TAP::Runner::Test> options
 
-=cut
-
 =head1 MOOSE SUBTYPES
-
-=cut
 
 =head2 ArrayRef::TAP::Runner::Option
 
 Coerce ArrayRef[HashRef] to ArrayRef[TAP::Runner::Test] Used b L<TAP::Runner::Test>
 
 =cut
-
 subtype 'ArrayRef::' . __PACKAGE__,
     as 'ArrayRef[' . __PACKAGE__ . ']';
 
@@ -29,33 +23,29 @@ coerce 'ArrayRef::' . __PACKAGE__,
 
 =head1 ATTRIBUTES
 
-=cut
-
-=head2 name
+=head2 name Str
 
 Option name
 
 =cut
-
 has name          => (
     is            => 'ro',
     isa           => 'Str',
     required      => 1,
 );
 
-=head2 values
+=head2 values ArrayRef[Str]
 
 Array of option values
 
 =cut
-
 has values        => (
     is            => 'ro',
     isa           => 'ArrayRef[Str]',
     required      => 1,
 );
 
-=head2 multiple
+=head2 multiple Bool
 
 If option multiple ( default not ) so for each option value will be new test
 with this value
@@ -67,19 +57,17 @@ with this value
     t/test.t --opt_exampl 2
 
 =cut
-
 has multiple      => (
     is            => 'ro',
     isa           => 'Bool',
     default       => 0,
 );
 
-=head2 parallel
+=head2 parallel Bool
 
 If option should run in parallel. Run in parallel can be just multiple option.
 
 =cut
-
 has parallel      => (
     is            => 'ro',
     isa           => 'Bool',
@@ -88,8 +76,6 @@ has parallel      => (
 
 =head1 METHODS
 
-=cut
-
 =head2 get_values_array
 
 Build array used for cartesian multiplication
@@ -97,7 +83,6 @@ Build array used for cartesian multiplication
     Example: [ [ opt_name, opt_val1 ], [ opt_name1, opt_val2 ] ]
 
 =cut
-
 sub get_values_array {
     my $self = shift;
 
